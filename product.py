@@ -15,3 +15,5 @@ class Product:
     def __repr__(self):
         """Метод для информативного отображения"""
         return f"Product({self.name}, {self.description}, {self.price}, {self.quantity})"
+
+

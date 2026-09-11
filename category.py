@@ -1,5 +1,4 @@
 class Category:
-
     """Класс, который хранит информацию о категориях продуктов"""
     name: str
     description: str
@@ -8,6 +7,7 @@ class Category:
     category_count: int
     product_count = 0
     category_count = 0
+
 
     def __init__(self, name, description, products):
         """Метод инициализации экземпляра класса"""
