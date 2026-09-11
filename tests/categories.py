@@ -110,3 +110,4 @@ class TestEdgeCases:
         product = Product("Name", "Desc", 100.0, 999999999)
 
         assert product.quantity == 999999999
+
