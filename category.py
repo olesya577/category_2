@@ -1,4 +1,5 @@
 class Category:
+
     """Класс, который хранит информацию о категориях продуктов"""
     name: str
     description: str
