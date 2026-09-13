@@ -9,8 +9,14 @@ readme = "README.md"
 python = "^3.14"
 isort = "^9.0.1"
 mypy = "^2.3.1"
+pytest = "^9.1.1"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest-cov (>=7.1.0,<8.0.0)"
+]

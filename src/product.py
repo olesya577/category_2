@@ -5,7 +5,6 @@ class Product:
     price: float
     quantity: int
 
-
     def __init__(self, name, description, price, quantity):
         """Метод инициализации экземпляра класса"""
         self.name = name
@@ -13,7 +12,8 @@ class Product:
         self.price = price
         self.quantity = quantity
 
-
     def __repr__(self):
         """Метод для информативного отображения"""
-        return f"Product({self.name}, {self.description}, {self.price}, {self.quantity})"
+        return (
+            f"Product({self.name}, {self.description}, {self.price}, {self.quantity})"
+        )

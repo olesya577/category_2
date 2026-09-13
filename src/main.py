@@ -1,7 +1,6 @@
 from src.product import Product
 from src.category import Category
 
-
 if __name__ == "__main__":
     product1 = Product(
         "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5
@@ -47,5 +46,3 @@ if __name__ == "__main__":
 
     print(Category.category_count)
     print(Category.product_count)
-
-
