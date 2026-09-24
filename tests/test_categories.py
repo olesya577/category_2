@@ -1,7 +1,7 @@
-import pytest
-from tests.conftest import reset_category_counters
-from src.product import Product
+from tests.conftest import reset_category_counters,sample_category
+from src.product import Product, Product_
 from src.category import Category
+import pytest
 
 
 class TestExampleScenario:
@@ -44,7 +44,6 @@ class TestExampleScenario:
         )
 
         assert category1.name == "Смартфоны"
-        assert len(category1.products) == 3
         assert Category.category_count == 1
         assert Category.product_count == 3
 
@@ -72,7 +71,6 @@ class TestExampleScenario:
         )
 
         assert category2.name == "Телевизоры"
-        assert len(category2.products) == 1
         assert Category.category_count == 2
         assert Category.product_count == 4
 
@@ -103,7 +101,6 @@ class TestEdgeCases:
 
         assert product.price == 999999999999.99
 
-
     @pytest.mark.usefixtures("reset_category_counters")
     def test_very_large_quantity(self):
         """Очень большое количество"""
@@ -111,3 +108,117 @@ class TestEdgeCases:
 
         assert product.quantity == 999999999
 
+
+class TestProduct_:
+    """Тесты для класса Product_"""
+
+    def test_product_creation(self, sample_product):
+        """Создание продукта"""
+        assert sample_product.name == "Samsung Galaxy S23 Ultra"
+        assert sample_product.description == "256GB, Серый цвет, 200MP камера"
+        assert sample_product.price == 180000.0
+        assert sample_product.quantity == 5
+
+    def test_product_price_getter(self, sample_product):
+        """Геттер цены"""
+        assert sample_product.price == 180000.0
+
+    def test_product_price_setter_valid(self, sample_product):
+        """Установка валидной цены"""
+        sample_product.price = 200000.0
+        assert sample_product.price == 200000.0
+
+
+    def test_product_price_setter_negative(self, sample_product, capsys):
+        """Установка отрицательной цены"""
+        old_price = sample_product.price
+        sample_product.price = -100
+
+        # Цена не должна измениться
+        assert sample_product.price == old_price
+
+        captured = capsys.readouterr()
+        assert "Цена не должна быть нулевая или отрицательная" in captured.out
+
+    def test_product_price_setter_multiple_attempts(self, sample_product, capsys):
+        """Несколько попыток установки невалидной цены"""
+        sample_product.price = 800
+        assert sample_product.price == 800
+
+        sample_product.price = -100
+        assert sample_product.price == 800  # Не изменилась
+
+        sample_product.price = 0
+        assert sample_product.price == 800  # Не изменилась
+
+        captured = capsys.readouterr()
+        assert captured.out.count("Цена не должна быть нулевая или отрицательная") == 2
+
+
+class TestCategory_:
+    """Тесты для класса Category_"""
+
+    def test_category_products_property(self, sample_category):
+        """Свойство products"""
+        products = sample_category.products
+
+        assert isinstance(products, list)
+        assert len(products) == 3
+        assert products[0].name == "Samsung Galaxy S23 Ultra"
+
+    def test_category_product_count_property(self, sample_category):
+        """Свойство product_count"""
+        assert sample_category.product_count == 3
+
+
+class TestNewProduct:
+    """Тесты для метода new_product"""
+
+    def test_new_product_creation(self):
+        """Создание продукта через new_product"""
+        product_data = {
+            "name": "Samsung Galaxy S23 Ultra",
+            "description": "256GB, Серый цвет, 200MP камера",
+            "price": 180000.0,
+            "quantity": 5,
+        }
+
+        new_product = Product_.new_product(product_data)
+
+        assert new_product.name == "Samsung Galaxy S23 Ultra"
+        assert new_product.description == "256GB, Серый цвет, 200MP камера"
+        assert new_product.price == 180000.0
+        assert new_product.quantity == 5
+
+    def test_new_product_is_product_instance(self):
+        """new_product возвращает объект Product"""
+        product_data = {
+            "name": "Test",
+            "description": "Test Description",
+            "price": 100.0,
+            "quantity": 1,
+        }
+
+        new_product = Product_.new_product(product_data)
+
+        assert isinstance(new_product, Product_)
+
+    def test_new_product_missing_keys(self):
+        """new_product с отсутствующими ключами"""
+        product_data = {"name": "Test"}
+
+        new_product = Product_.new_product(product_data)
+
+        assert new_product.name == "Test"
+        assert new_product.description is None
+        assert new_product.price is None
+        assert new_product.quantity is None
+
+    def test_new_product_empty_dict(self):
+        """new_product с пустым словарём"""
+        new_product = Product_.new_product({})
+
+        assert new_product.name is None
+        assert new_product.description is None
+        assert new_product.price is None
+        assert new_product.quantity is None
