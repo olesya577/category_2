@@ -11,6 +11,7 @@ def reset_category_counters():
     Category.category_count = 0
     Category.product_count = 0
 
+
 @pytest.fixture
 def sample_product() -> Product:
     """Фикстура: один тестовый продукт"""

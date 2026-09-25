@@ -14,6 +14,7 @@ class Product:
         self.price = price
         self.quantity = quantity
 
+
     def __repr__(self):
         """Метод для информативного отображения"""
         return (

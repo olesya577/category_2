@@ -74,6 +74,7 @@ class TestExampleScenario:
         assert Category.category_count == 2
         assert Category.product_count == 4
 
+
     @pytest.mark.usefixtures("reset_category_counters")
     def test_example_counters(self):
         """Проверка счетчиков"""

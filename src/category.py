@@ -41,6 +41,7 @@ class Category_:
         """Геттер для списка продуктов"""
         return self.products
 
+
     @property
     def product_count(self) -> int:
         """Геттер для количества продуктов в категории"""
