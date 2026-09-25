@@ -1,4 +1,3 @@
-from typing import Dict,Any
 class Product:
     """Класс, который хранит информацию о продуктах"""
 
@@ -11,7 +10,7 @@ class Product:
         """Метод инициализации экземпляра класса"""
         self.name = name
         self.description = description
-        self.price = price
+        self.__price = price
         self.quantity = quantity
 
 
@@ -21,40 +20,20 @@ class Product:
             f"Product({self.name}, {self.description}, {self.price}, {self.quantity})"
         )
 
-
-class Product_:
-    """Класс для представления продукта"""
-
-    def __init__(self, name: str, description: str, price: float, quantity: int):
-        self.name = name
-        self.description = description
-        self.__price = price  # Приватный атрибут для price
-        self.quantity = quantity
-
     @property
     def price(self) -> float:
-        """Геттер для цены"""
+        """Геттер для получения значения приватной цены"""
         return self.__price
 
     @price.setter
-    def price(self, value: float):
-        """
-        Сеттер для цены с валидацией.
-        Если цена <= 0, выводит предупреждение и не меняет цену.
-        """
-        if value <= 0:
-            print("Цена не должна быть нулевая или отрицательная")
+    def price(self, new_price: float) -> None:
+        """Сеттер для установки новой цены с проверкой на положительность"""
+        if new_price > 0:
+            self.__price = new_price
         else:
-            self._price = value
+            print("Цена не должна быть нулевая или отрицательная")
 
     @classmethod
-    def new_product(cls, product_data: Dict[str, Any]) -> 'Product_':
-        return cls(
-            name=product_data.get('name'),
-            description=product_data.get('description'),
-            price=product_data.get('price'),
-            quantity=product_data.get('quantity')
-        )
-
-    def __repr__(self) -> str:
-        return f"Product({self.name}, {self.price}, {self.quantity})"
+    def new_product(cls, data: dict) -> "Product":
+        """Класс-метод для создания экземпляра Product из словаря"""
+        return cls(name=data["name"], description=data["description"], price=data["price"], quantity=data["quantity"])

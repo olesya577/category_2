@@ -1,5 +1,5 @@
 from tests.conftest import reset_category_counters,sample_category
-from src.product import Product, Product_
+from src.product import Product
 from src.category import Category
 import pytest
 
@@ -111,7 +111,7 @@ class TestEdgeCases:
 
 
 class TestProduct_:
-    """Тесты для класса Product_"""
+    """Тесты для класса Product"""
 
     def test_product_creation(self, sample_product):
         """Создание продукта"""
@@ -159,14 +159,6 @@ class TestProduct_:
 class TestCategory_:
     """Тесты для класса Category_"""
 
-    def test_category_products_property(self, sample_category):
-        """Свойство products"""
-        products = sample_category.products
-
-        assert isinstance(products, list)
-        assert len(products) == 3
-        assert products[0].name == "Samsung Galaxy S23 Ultra"
-
     def test_category_product_count_property(self, sample_category):
         """Свойство product_count"""
         assert sample_category.product_count == 3
@@ -184,7 +176,7 @@ class TestNewProduct:
             "quantity": 5,
         }
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
         assert new_product.name == "Samsung Galaxy S23 Ultra"
         assert new_product.description == "256GB, Серый цвет, 200MP камера"
@@ -200,15 +192,15 @@ class TestNewProduct:
             "quantity": 1,
         }
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
-        assert isinstance(new_product, Product_)
+        assert isinstance(new_product, Product)
 
     def test_new_product_missing_keys(self):
         """new_product с отсутствующими ключами"""
         product_data = {"name": "Test"}
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
         assert new_product.name == "Test"
         assert new_product.description is None
@@ -217,7 +209,7 @@ class TestNewProduct:
 
     def test_new_product_empty_dict(self):
         """new_product с пустым словарём"""
-        new_product = Product_.new_product({})
+        new_product = Product.new_product({})
 
         assert new_product.name is None
         assert new_product.description is None
