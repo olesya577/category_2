@@ -13,7 +13,6 @@ class Product:
         self.__price = price
         self.quantity = quantity
 
-
     def __repr__(self):
         """Метод для информативного отображения"""
         return (
@@ -37,3 +36,10 @@ class Product:
     def new_product(cls, data: dict) -> "Product":
         """Класс-метод для создания экземпляра Product из словаря"""
         return cls(name=data["name"], description=data["description"], price=data["price"], quantity=data["quantity"])
+
+    def __add__(self, other):
+        if isinstance(other, Product):
+            full_cost = self.price * self.quantity
+            other_full_cost = other.price * other.quantity
+            return full_cost + other_full_cost
+        return NotImplemented
