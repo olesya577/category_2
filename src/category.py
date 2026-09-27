@@ -1,5 +1,4 @@
 from src.product import Product
-from typing import List
 class Category:
     """Класс, который хранит информацию о категориях продуктов"""
 
@@ -15,40 +14,31 @@ class Category:
         """Метод инициализации экземпляра класса"""
         self.name = name
         self.description = description
-        self.products = products if products else []
+        self.__products = products if products else []
         Category.category_count += 1
-        Category.product_count += len(products)
+        Category.product_count += len(self.__products)
+
+    def __str__(self):
+        product_count = 0
+        for product in self.__products:
+            product_count += product.quantity
+        return f"{self.name}, количество продуктов: {product_count} шт."
 
 
-class Category_:
-    """Класс для представления категории продуктов"""
-
-    category_count = 0
-    product_count = 0
-
-    def __init__(self, name: str, description: str, products: List[Product]):
-        self.name = name
-        self.description = description
-        self.__products = products
-        self.__product_count = len(products)
-
-        # Увеличиваем счетчики класса
-        Category.category_count += 1
-        Category.product_count += len(products)
-
-    @property
-    def products(self) -> List[Product]:
-        """Геттер для списка продуктов"""
-        return self.products
-
-    @property
-    def product_count(self) -> int:
-        """Геттер для количества продуктов в категории"""
-        return len(self.products)
-
-    def add_product(self, product: Product):
-        self.products.append(product)
+    def add_product(self, product: Product) -> None:
+        """Добавляет продукт в категорию."""
+        self.__products.append(product)
         Category.product_count += 1
 
-    def __repr__(self) -> str:
-        return f"Category({self.name}, {len(self.products)} products)"
+    @property
+    def products(self) -> str:
+        """Геттер для доступа к приватному списку товаров."""
+        result = ""
+        for product in self.__products:
+            line = f"{product.name}, {product.price:.0f} руб. Остаток: {product.quantity} шт.\n"
+            result += line
+        return result
+
+
+
+

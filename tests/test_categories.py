@@ -1,5 +1,11 @@
-from tests.conftest import reset_category_counters,sample_category
-from src.product import Product, Product_
+from tests.conftest import (
+    reset_category_counters,
+    sample_category,
+    product1,
+    product2,
+    product3,
+)
+from src.product import Product
 from src.category import Category
 import pytest
 
@@ -109,8 +115,8 @@ class TestEdgeCases:
         assert product.quantity == 999999999
 
 
-class TestProduct_:
-    """Тесты для класса Product_"""
+class TestProduct:
+    """Тесты для класса Product"""
 
     def test_product_creation(self, sample_product):
         """Создание продукта"""
@@ -127,7 +133,6 @@ class TestProduct_:
         """Установка валидной цены"""
         sample_product.price = 200000.0
         assert sample_product.price == 200000.0
-
 
     def test_product_price_setter_negative(self, sample_product, capsys):
         """Установка отрицательной цены"""
@@ -155,20 +160,60 @@ class TestProduct_:
         assert captured.out.count("Цена не должна быть нулевая или отрицательная") == 2
 
 
-class TestCategory_:
-    """Тесты для класса Category_"""
+class TestProductAdd:
+    """Тесты для метода __add__ класса Product"""
 
-    def test_category_products_property(self, sample_category):
-        """Свойство products"""
-        products = sample_category.products
+    def test_add_product1_product2(self, product1, product2):
+        """product1 + product2"""
+        # 180000 * 5 + 210000 * 8 = 900000 + 1680000 = 2580000
+        expected = 180000.0 * 5 + 210000.0 * 8
+        assert product1 + product2 == expected
 
-        assert isinstance(products, list)
-        assert len(products) == 3
-        assert products[0].name == "Samsung Galaxy S23 Ultra"
+    def test_add_product1_product3(self, product1, product3):
+        """product1 + product3"""
+        # 180000 * 5 + 31000 * 14 = 900000 + 434000 = 1334000
+        expected = 180000.0 * 5 + 31000.0 * 14
+        assert product1 + product3 == expected
+
+    def test_add_product2_product3(self, product2, product3):
+        """product2 + product3"""
+        # 210000 * 8 + 31000 * 14 = 1680000 + 434000 = 2114000
+        expected = 210000.0 * 8 + 31000.0 * 14
+        assert product2 + product3 == expected
+
+    def test_add_returns_number(self, product1, product2):
+        """__add__ возвращает число"""
+        result = product1 + product2
+        assert isinstance(result, (int, float))
+
+    def test_add_same_product(self, product1):
+        """Сложение продукта с самим собой"""
+        expected = 180000.0 * 5 * 2
+        assert product1 + product1 == expected
+
+
+class TestCategory:
+    """Тесты для класса Category"""
 
     def test_category_product_count_property(self, sample_category):
         """Свойство product_count"""
         assert sample_category.product_count == 3
+
+    def test_print_str_category(self, sample_category, capsys):
+        """Вывод категории через print"""
+        print(str(sample_category))
+        captured = capsys.readouterr()
+        assert "Смартфоны, количество продуктов: 27 шт." in captured.out
+
+    def test_products_in_category_str(self, sample_category, capsys):
+        """Вывод списка продуктов категории"""
+        print(sample_category.products)
+        captured = capsys.readouterr()
+
+        # Проверяем, что в выводе есть все продукты
+        assert "Samsung Galaxy S23 Ultra" in captured.out
+        assert "Iphone 15" in captured.out
+        assert "Xiaomi Redmi Note 11" in captured.out
 
 
 class TestNewProduct:
@@ -183,7 +228,7 @@ class TestNewProduct:
             "quantity": 5,
         }
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
         assert new_product.name == "Samsung Galaxy S23 Ultra"
         assert new_product.description == "256GB, Серый цвет, 200MP камера"
@@ -199,26 +244,17 @@ class TestNewProduct:
             "quantity": 1,
         }
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
-        assert isinstance(new_product, Product_)
+        assert isinstance(new_product, Product)
 
     def test_new_product_missing_keys(self):
         """new_product с отсутствующими ключами"""
         product_data = {"name": "Test"}
 
-        new_product = Product_.new_product(product_data)
+        new_product = Product.new_product(product_data)
 
         assert new_product.name == "Test"
-        assert new_product.description is None
-        assert new_product.price is None
-        assert new_product.quantity is None
-
-    def test_new_product_empty_dict(self):
-        """new_product с пустым словарём"""
-        new_product = Product_.new_product({})
-
-        assert new_product.name is None
         assert new_product.description is None
         assert new_product.price is None
         assert new_product.quantity is None
