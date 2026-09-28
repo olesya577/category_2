@@ -68,4 +68,3 @@ def __add__(self, other):
     full_cost = self.price * self.quantity
     other_full_cost = other.price * other.quantity
     return full_cost + other_full_cost
-
