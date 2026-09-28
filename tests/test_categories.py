@@ -4,12 +4,18 @@ from tests.conftest import (
     product1,
     product2,
     product3,
-smartphone1,smartphone2,smartphone3,grass1,grass2,category_smartphones,category_grass
+    smartphone1,
+    smartphone2,
+    smartphone3,
+    grass1,
+    grass2,
+
 )
-from src.product import Product,Smartphone,LawnGrass
+from src.product import Product, Smartphone, LawnGrass,BaseProduct,MixinProduct
 from src.category import Category
 import pytest
 
+from abc import ABC, abstractmethod
 
 class TestExampleScenario:
     """Тесты Product и Category"""
@@ -161,7 +167,6 @@ class TestProduct:
         assert captured.out.count("Цена не должна быть нулевая или отрицательная") == 2
 
 
-
 class TestProductAdd:
     """Тесты для метода __add__ класса Product"""
 
@@ -272,6 +277,7 @@ def test_smartphone1_attributes(smartphone1):
     assert smartphone1.model == "S23 Ultra"
     assert smartphone1.color == "Серый"
 
+
 def test_smartphone2_attributes(smartphone2):
     assert smartphone2.name == "Iphone 15"
     assert smartphone2.price == 210000.0
@@ -280,11 +286,13 @@ def test_smartphone2_attributes(smartphone2):
     assert smartphone2.memory == 512
     assert smartphone2.color == "Gray space"
 
+
 def test_smartphone3_attributes(smartphone3):
     assert smartphone3.name == "Xiaomi Redmi Note 11"
     assert smartphone3.price == 31000.0
     assert smartphone3.efficiency == 90.3
     assert smartphone3.memory == 1024
+
 
 def test_smartphone_is_product(smartphone1):
     """Smartphone является наследником Product"""
@@ -301,17 +309,18 @@ def test_grass_init(grass1):
     assert grass1.description == "Элитная трава для газона"
     assert grass1.color == "Зеленый"
 
+
 def test_grass2_attributes(grass2):
     assert grass2.name == "Газонная трава 2"
     assert grass2.price == 450.0
     assert grass2.country == "США"
     assert grass2.germination_period == "5 дней"
 
+
 def test_grass_is_product(grass1):
     """LawnGrass является наследником Product"""
     assert isinstance(grass1, Product)
     assert isinstance(grass1, LawnGrass)
-
 
 
 class TestAddition:
@@ -349,8 +358,9 @@ class TestAddition:
         expected = 180000.0 * 5 * 2
         assert smartphone1 + smartphone1 == expected
 
-    def test_full_scenario(self, smartphone1, smartphone2, smartphone3,
-                           grass1, grass2, capsys):
+    def test_full_scenario(
+        self, smartphone1, smartphone2, smartphone3, grass1, grass2, capsys
+    ):
         # Сложение смартфонов
         smartphone_sum = smartphone1 + smartphone2
         assert smartphone_sum == 180000.0 * 5 + 210000.0 * 8
@@ -365,12 +375,10 @@ class TestAddition:
 
         # Создание категорий
         category_smartphones = Category(
-            "Смартфоны", "Высокотехнологичные смартфоны",
-            [smartphone1, smartphone2]
+            "Смартфоны", "Высокотехнологичные смартфоны", [smartphone1, smartphone2]
         )
         category_grass = Category(
-            "Газонная трава", "Различные виды газонной травы",
-            [grass1, grass2]
+            "Газонная трава", "Различные виды газонной травы", [grass1, grass2]
         )
 
         # Добавление продукта
@@ -386,3 +394,75 @@ class TestAddition:
         # Добавление не-продукта → TypeError
         with pytest.raises(TypeError):
             category_smartphones.add_product("Not a product")
+
+
+class TestBaseProduct:
+    """Тесты для абстрактного класса BaseProduct"""
+
+    def test_base_product_is_abstract(self):
+        """BaseProduct — абстрактный класс"""
+        assert issubclass(BaseProduct, ABC)
+
+    def test_cannot_instantiate_base_product(self):
+        """Нельзя создать экземпляр BaseProduct"""
+        with pytest.raises(TypeError):
+            BaseProduct("Test", "Desc", 100.0, 1)
+
+    def test_base_product_has_abstract_methods(self):
+        """BaseProduct содержит абстрактные методы"""
+        assert hasattr(BaseProduct, '__init__')
+        assert hasattr(BaseProduct, '__add__')
+        assert BaseProduct.__init__.__isabstractmethod__
+        assert BaseProduct.__add__.__isabstractmethod__
+
+    def test_product_is_subclass_of_base(self):
+        """Product наследуется от BaseProduct"""
+        assert issubclass(Product, BaseProduct)
+
+    def test_smartphone_is_subclass_of_base(self):
+        """Smartphone наследуется от BaseProduct"""
+        assert issubclass(Smartphone, BaseProduct)
+
+    def test_lawn_grass_is_subclass_of_base(self):
+        """LawnGrass наследуется от BaseProduct"""
+        assert issubclass(LawnGrass, BaseProduct)
+
+
+
+
+class TestMixinProduct:
+    """Тесты для миксина MixinProduct"""
+
+    def test_mixin_has_repr(self):
+        """MixinProduct содержит __repr__"""
+        assert hasattr(MixinProduct, '__repr__')
+
+    def test_mixin_repr_format(self):
+        """Формат __repr__ миксина"""
+
+        # Создаем тестовый класс на основе миксина
+        class TestProduct(MixinProduct):
+            def __init__(self):
+                self.name = "Test"
+                self.description = "Desc"
+                self.price = 100.0
+                self.quantity = 5
+
+        product = TestProduct()
+        result = repr(product)
+
+        assert "TestProduct" in result
+        assert "Test" in result
+        assert "Desc" in result
+        assert "100.0" in result
+        assert "5" in result
+
+    def test_product_inherits_mixin(self):
+        """Product наследуется от MixinProduct"""
+        assert issubclass(Product, MixinProduct)
+
+    def test_product_mro(self):
+        """ MRO Product"""
+        mro = Product.__mro__
+        assert BaseProduct in mro
+        assert MixinProduct in mro
