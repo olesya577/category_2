@@ -4,8 +4,9 @@ from tests.conftest import (
     product1,
     product2,
     product3,
+smartphone1,smartphone2,smartphone3,grass1,grass2,category_smartphones,category_grass
 )
-from src.product import Product
+from src.product import Product,Smartphone,LawnGrass
 from src.category import Category
 import pytest
 
@@ -160,6 +161,7 @@ class TestProduct:
         assert captured.out.count("Цена не должна быть нулевая или отрицательная") == 2
 
 
+
 class TestProductAdd:
     """Тесты для метода __add__ класса Product"""
 
@@ -258,3 +260,129 @@ class TestNewProduct:
         assert new_product.description is None
         assert new_product.price is None
         assert new_product.quantity is None
+
+
+def test_smartphone1_attributes(smartphone1):
+    assert smartphone1.name == "Samsung Galaxy S23 Ultra"
+    assert smartphone1.price == 180000.0
+    assert smartphone1.description == "256GB, Серый цвет, 200MP камера"
+    assert smartphone1.quantity == 5
+    assert smartphone1.efficiency == 95.5
+    assert smartphone1.memory == 256
+    assert smartphone1.model == "S23 Ultra"
+    assert smartphone1.color == "Серый"
+
+def test_smartphone2_attributes(smartphone2):
+    assert smartphone2.name == "Iphone 15"
+    assert smartphone2.price == 210000.0
+    assert smartphone2.efficiency == 98.2
+    assert smartphone2.model == "15"
+    assert smartphone2.memory == 512
+    assert smartphone2.color == "Gray space"
+
+def test_smartphone3_attributes(smartphone3):
+    assert smartphone3.name == "Xiaomi Redmi Note 11"
+    assert smartphone3.price == 31000.0
+    assert smartphone3.efficiency == 90.3
+    assert smartphone3.memory == 1024
+
+def test_smartphone_is_product(smartphone1):
+    """Smartphone является наследником Product"""
+    assert isinstance(smartphone1, Product)
+    assert isinstance(smartphone1, Smartphone)
+
+
+def test_grass_init(grass1):
+    assert grass1.name == "Газонная трава"
+    assert grass1.quantity == 20
+    assert grass1.price == 500
+    assert grass1.germination_period == "7 дней"
+    assert grass1.country == "Россия"
+    assert grass1.description == "Элитная трава для газона"
+    assert grass1.color == "Зеленый"
+
+def test_grass2_attributes(grass2):
+    assert grass2.name == "Газонная трава 2"
+    assert grass2.price == 450.0
+    assert grass2.country == "США"
+    assert grass2.germination_period == "5 дней"
+
+def test_grass_is_product(grass1):
+    """LawnGrass является наследником Product"""
+    assert isinstance(grass1, Product)
+    assert isinstance(grass1, LawnGrass)
+
+
+
+class TestAddition:
+    """Тесты для метода __add__"""
+
+    def test_smartphone_sum(self, smartphone1, smartphone2):
+        """Сложение смартфонов"""
+        # 180000 * 5 + 210000 * 8 = 900000 + 1680000 = 2580000
+        expected = 180000.0 * 5 + 210000.0 * 8
+        assert smartphone1 + smartphone2 == expected
+
+    def test_grass_sum(self, grass1, grass2):
+        """Сложение газонной травы"""
+        # 500 * 20 + 450 * 15 = 10000 + 6750 = 16750
+        expected = 500.0 * 20 + 450.0 * 15
+        assert grass1 + grass2 == expected
+
+    def test_smartphone_plus_grass_raises_typeerror(self, smartphone1, grass1):
+        """Сложение смартфона и травы → TypeError"""
+        with pytest.raises(TypeError):
+            smartphone1 + grass1
+
+    def test_grass_plus_smartphone_raises_typeerror(self, grass1, smartphone1):
+        """Сложение травы и смартфона → TypeError"""
+        with pytest.raises(TypeError):
+            grass1 + smartphone1
+
+    def test_smartphone_sum_is_number(self, smartphone1, smartphone2):
+        """Результат сложения — число"""
+        result = smartphone1 + smartphone2
+        assert isinstance(result, (int, float))
+
+    def test_add_same_object(self, smartphone1):
+        """Сложение с самим собой"""
+        expected = 180000.0 * 5 * 2
+        assert smartphone1 + smartphone1 == expected
+
+    def test_full_scenario(self, smartphone1, smartphone2, smartphone3,
+                           grass1, grass2, capsys):
+        # Сложение смартфонов
+        smartphone_sum = smartphone1 + smartphone2
+        assert smartphone_sum == 180000.0 * 5 + 210000.0 * 8
+
+        # Сложение травы
+        grass_sum = grass1 + grass2
+        assert grass_sum == 500.0 * 20 + 450.0 * 15
+
+        # Сложение разных типов → TypeError
+        with pytest.raises(TypeError):
+            smartphone1 + grass1
+
+        # Создание категорий
+        category_smartphones = Category(
+            "Смартфоны", "Высокотехнологичные смартфоны",
+            [smartphone1, smartphone2]
+        )
+        category_grass = Category(
+            "Газонная трава", "Различные виды газонной травы",
+            [grass1, grass2]
+        )
+
+        # Добавление продукта
+        category_smartphones.add_product(smartphone3)
+        assert Category.product_count == 5
+
+        # Проверка геттера products
+        products_str = category_smartphones.products
+        assert "Samsung Galaxy S23 Ultra" in products_str
+        assert "Iphone 15" in products_str
+        assert "Xiaomi Redmi Note 11" in products_str
+
+        # Добавление не-продукта → TypeError
+        with pytest.raises(TypeError):
+            category_smartphones.add_product("Not a product")
