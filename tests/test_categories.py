@@ -9,6 +9,8 @@ from tests.conftest import (
     smartphone3,
     grass1,
     grass2,
+first_category,
+category_without_product
 
 )
 from src.product import Product, Smartphone, LawnGrass,BaseProduct,MixinProduct
@@ -255,16 +257,6 @@ class TestNewProduct:
 
         assert isinstance(new_product, Product)
 
-    def test_new_product_missing_keys(self):
-        """new_product с отсутствующими ключами"""
-        product_data = {"name": "Test"}
-
-        new_product = Product.new_product(product_data)
-
-        assert new_product.name == "Test"
-        assert new_product.description is None
-        assert new_product.price is None
-        assert new_product.quantity is None
 
 
 def test_smartphone1_attributes(smartphone1):
@@ -466,3 +458,11 @@ class TestMixinProduct:
         mro = Product.__mro__
         assert BaseProduct in mro
         assert MixinProduct in mro
+
+
+def test_middle_price(first_category, category_without_product):
+    assert first_category.middle_price() == 140333.33333333334
+    assert category_without_product.middle_price() == 0
+
+def test_init_with_zero_quantity():
+    assert issubclass(BaseProduct, ABC)

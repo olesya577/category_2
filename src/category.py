@@ -34,6 +34,13 @@ class Category:
         Category.product_count += 1
 
 
+    def middle_price(self):
+        try:
+            return sum([product.price for product in self.__products]) / len(self.__products)
+        except ZeroDivisionError:
+            return 0
+
+
     @property
     def products(self) -> str:
         """Геттер для доступа к приватному списку товаров."""
@@ -42,6 +49,8 @@ class Category:
             line = f"{product.name}, {product.price:.0f} руб. Остаток: {product.quantity} шт.\n"
             result += line
         return result
+
+
 
 
 

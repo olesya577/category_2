@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 class BaseProduct(ABC):
 
     @abstractmethod
-    def __init__(self, name, description, price, quantity):
-        pass
+    def __init__(self,quantity):
+        if quantity <= 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
     @abstractmethod
     def __add__(self, other):
@@ -14,6 +15,7 @@ class BaseProduct(ABC):
 class MixinProduct:
     def __repr__(self):
         return f"{self.__class__.__name__},{self.name}, {self.description}, {self.price}, {self.quantity})"
+
 
 class Product(BaseProduct, MixinProduct):
     """Класс, который хранит информацию о продуктах"""
@@ -123,3 +125,5 @@ def __add__(self, other):
     full_cost = self.price * self.quantity
     other_full_cost = other.price * other.quantity
     return full_cost + other_full_cost
+
+
