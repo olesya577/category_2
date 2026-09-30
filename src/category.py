@@ -24,11 +24,22 @@ class Category:
             product_count += product.quantity
         return f"{self.name}, количество продуктов: {product_count} шт."
 
-
-    def add_product(self, product: Product) -> None:
-        """Добавляет продукт в категорию."""
+    def add_product(self, product):
+        if not isinstance(product, Product):
+            raise TypeError(
+                f"Можно добавлять только продукты (Product и его наследники), "
+                f"получен объект: {type(product).__name__}"
+            )
         self.__products.append(product)
         Category.product_count += 1
+
+
+    def middle_price(self):
+        try:
+            return sum([product.price for product in self.__products]) / len(self.__products)
+        except ZeroDivisionError:
+            return 0
+
 
     @property
     def products(self) -> str:
@@ -38,6 +49,8 @@ class Category:
             line = f"{product.name}, {product.price:.0f} руб. Остаток: {product.quantity} шт.\n"
             result += line
         return result
+
+
 
 
 
